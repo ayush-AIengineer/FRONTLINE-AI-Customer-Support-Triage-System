@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "provider": "zendesk",
+  "webhook_url": "",
+  "api_token": "",
+  "email": "",
+  "subdomain": "test",
+  "project_key": "",
+  "default_priority": "high",
+  "default_assignee": "",
+  "create_ticket_for_needs_human": true,
+  "custom_fields": {}
+}

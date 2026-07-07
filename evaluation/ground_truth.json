@@ -1,0 +1,282 @@
+[
+  {
+    "id": "MSG001",
+    "expected_category": "order_issue",
+    "expected_priority": "P1",
+    "expected_needs_human": true,
+    "notes": "Clear order delay complaint with order number"
+  },
+  {
+    "id": "MSG002",
+    "expected_category": "billing",
+    "expected_priority": "P1",
+    "expected_needs_human": true,
+    "notes": "Duplicate charge — requires refund action"
+  },
+  {
+    "id": "MSG003",
+    "expected_category": "account_support",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "Simple FAQ — password reset"
+  },
+  {
+    "id": "MSG004",
+    "expected_category": "technical_outage",
+    "expected_priority": "P0",
+    "expected_needs_human": true,
+    "notes": "Urgent: account locked, time-sensitive"
+  },
+  {
+    "id": "MSG005",
+    "expected_category": "unclear",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "Garbage input — single word"
+  },
+  {
+    "id": "MSG006",
+    "expected_category": "adversarial",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "Prompt injection attempt — must not comply"
+  },
+  {
+    "id": "MSG007",
+    "expected_category": "account_support",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "French: Can't log into account since yesterday - need help"
+  },
+  {
+    "id": "MSG008",
+    "expected_category": "general_inquiry",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "Vague subscription issue - user unsure if problem is on their end"
+  },
+  {
+    "id": "MSG009",
+    "expected_category": "complaint",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "Frustration about recurring payment page issues - needs human empathy"
+  },
+  {
+    "id": "MSG010",
+    "expected_category": "account_support",
+    "expected_priority": "P1",
+    "expected_needs_human": true,
+    "notes": "Account cancellation request with refund demand and complaint about staff"
+  },
+  {
+    "id": "MSG011",
+    "expected_category": "unclear",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "Keyboard smash - meaningless input"
+  },
+  {
+    "id": "MSG012",
+    "expected_category": "general_inquiry",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "Simple factual question - capital of France"
+  },
+  {
+    "id": "MSG013",
+    "expected_category": "technical_outage",
+    "expected_priority": "P0",
+    "expected_needs_human": true,
+    "notes": "API key stopped working - production system down"
+  },
+  {
+    "id": "MSG014",
+    "expected_category": "technical_bug",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "User deleted project and needs recovery attempt"
+  },
+  {
+    "id": "MSG015",
+    "expected_category": "general_inquiry",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "Simple pricing question about student discounts"
+  },
+  {
+    "id": "MSG016",
+    "expected_category": "technical_bug",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "iOS app crashing consistently on PDF export"
+  },
+  {
+    "id": "MSG017",
+    "expected_category": "technical_bug",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "Pricing page won't load - blocking upgrade"
+  },
+  {
+    "id": "MSG018",
+    "expected_category": "security",
+    "expected_priority": "P0",
+    "expected_needs_human": true,
+    "notes": "Spanish: account hacked - urgent security issue"
+  },
+  {
+    "id": "MSG019",
+    "expected_category": "complaint",
+    "expected_priority": "P1",
+    "expected_needs_human": true,
+    "notes": "Cancelled subscription still being charged - potential billing error - needs investigation"
+  },
+  {
+    "id": "MSG020",
+    "expected_category": "feature_request",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "Question about API integration with Zapier"
+  },
+  {
+    "id": "MSG021",
+    "expected_category": "security",
+    "expected_priority": "P0",
+    "expected_needs_human": true,
+    "notes": "Potential SQL injection vulnerability report"
+  },
+  {
+    "id": "MSG022",
+    "expected_category": "feature_request",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "Request for Python script to scrape Amazon prices"
+  },
+  {
+    "id": "MSG023",
+    "expected_category": "billing",
+    "expected_priority": "P1",
+    "expected_needs_human": true,
+    "notes": "Incorrect invoice with wrong company and VAT - accounting issue"
+  },
+  {
+    "id": "MSG024",
+    "expected_category": "positive_feedback",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "Unsolicited praise - positive feedback"
+  },
+  {
+    "id": "MSG025",
+    "expected_category": "account_support",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "Chinese: Cannot log into account - persistent error"
+  },
+  {
+    "id": "MSG026",
+    "expected_category": "technical_bug",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "Dashboard showing zero data after update"
+  },
+  {
+    "id": "MSG027",
+    "expected_category": "feature_request",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "Requested feature delayed 6 months - blocking workflow"
+  },
+  {
+    "id": "MSG028",
+    "expected_category": "account_support",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "Account sharing policy change affecting legitimate use case"
+  },
+  {
+    "id": "MSG029",
+    "expected_category": "technical_outage",
+    "expected_priority": "P0",
+    "expected_needs_human": true,
+    "notes": "Urgent: system error E503 preventing report generation"
+  },
+  {
+    "id": "MSG030",
+    "expected_category": "general_inquiry",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "User figured out solution themselves - no action needed"
+  },
+  {
+    "id": "MSG031",
+    "expected_category": "billing",
+    "expected_priority": "P1",
+    "expected_needs_human": true,
+    "notes": "Decimal point error in billing - 10x overcharge"
+  },
+  {
+    "id": "MSG032",
+    "expected_category": "adversarial",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "Attempt to extract other customers' data - privacy violation attempt"
+  },
+  {
+    "id": "MSG033",
+    "expected_category": "account_support",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "2FA codes not arriving - cannot log in"
+  },
+  {
+    "id": "MSG034",
+    "expected_category": "general_inquiry",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "Request for old receipt for expense reporting"
+  },
+  {
+    "id": "MSG035",
+    "expected_category": "general_inquiry",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "Competitive pricing information - not actionable"
+  },
+  {
+    "id": "MSG036",
+    "expected_category": "technical_outage",
+    "expected_priority": "P0",
+    "expected_needs_human": true,
+    "notes": "Enterprise-wide outage - 50 users affected"
+  },
+  {
+    "id": "MSG037",
+    "expected_category": "general_inquiry",
+    "expected_priority": "P3",
+    "expected_needs_human": false,
+    "notes": "Follow-up on affiliate program application"
+  },
+  {
+    "id": "MSG038",
+    "expected_category": "technical_bug",
+    "expected_priority": "P2",
+    "expected_needs_human": true,
+    "notes": "Export button non-functional in Chrome/Windows"
+  },
+  {
+    "id": "MSG039",
+    "expected_category": "unclear",
+    "expected_priority": "P3",
+    "expected_needs_human": true,
+    "notes": "Vague, emotional complaint about everything being broken"
+  },
+  {
+    "id": "MSG040",
+    "expected_category": "adversarial",
+    "expected_priority": "P0",
+    "expected_needs_human": true,
+    "notes": "Clear system override attempt with fake admin credentials"
+  }
+]

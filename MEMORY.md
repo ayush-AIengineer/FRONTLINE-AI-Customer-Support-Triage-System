@@ -1,0 +1,1 @@
+- [Async batch processing implemented](memory/async-batch-processing-implemented.md) — Added asynchronous batch processing for improved throughput

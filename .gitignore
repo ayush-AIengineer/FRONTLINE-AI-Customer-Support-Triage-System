@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+outputs/triage_results_*.json
+outputs/evaluation_report.json
+*.egg-info/
+dist/
+build/
+.venv/
+venv/

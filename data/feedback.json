@@ -1,0 +1,33 @@
+{
+  "feedback_version": "1.0",
+  "description": "Storage for human feedback on triage decisions to enable continuous learning",
+  "feedback_entries": [
+    {
+      "id": "fb_1_1783408554",
+      "timestamp": 1783408554.116032,
+      "message": "Test message for feedback",
+      "original_prediction": {
+        "category": "billing",
+        "priority": "P1",
+        "summary": "Test",
+        "suggested_action": "Test action",
+        "needs_human": true,
+        "confidence": 0.8,
+        "detected_language": "en",
+        "flags": []
+      },
+      "corrected_decision": {
+        "category": "billing",
+        "priority": "P1",
+        "summary": "Test corrected",
+        "suggested_action": "Test action corrected",
+        "needs_human": true,
+        "confidence": 0.9,
+        "detected_language": "en",
+        "flags": []
+      },
+      "feedback_source": "test",
+      "used_for_training": false
+    }
+  ]
+}

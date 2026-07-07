@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FRONTLINE — AI Triage Dashboard</title>
+  <meta name="description" content="Real-time AI customer support triage dashboard. Classifies messages by category, priority, and escalation need." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: #1f2d45;
+      --accent: #3b82f6;
+      --accent2: #8b5cf6;
+      --p0: #ef4444;
+      --p1: #f97316;
+      --p2: #eab308;
+      --p3: #22c55e;
+      --text: #e2e8f0;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      --font: 'Inter', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.03em;
+    }
+    .logo span { font-weight: 300; }
+    .header-badge {
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.3);
+      color: #93c5fd;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Main Layout ── */
+    main { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+
+    /* ── Stats Cards ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.5rem; }
+    .stat-value { font-size: 2rem; font-weight: 800; font-family: var(--mono); }
+    .stat-value.red { color: var(--p0); }
+    .stat-value.orange { color: var(--p1); }
+    .stat-value.blue { color: var(--accent); }
+    .stat-value.purple { color: var(--accent2); }
+    .stat-value.green { color: var(--p3); }
+
+    /* ── Live Triage ── */
+    .triage-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .panel-title::before { content: ''; display: inline-block; width: 3px; height: 1rem; background: var(--accent); border-radius: 2px; }
+    .triage-form { display: flex; gap: 0.75rem; }
+    .triage-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .triage-input:focus { border-color: var(--accent); }
+    .triage-input::placeholder { color: var(--text-muted); }
+    .btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .triage-result {
+      margin-top: 1rem;
+      display: none;
+    }
+    .result-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .result-field label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 0.25rem; }
+    .result-field .val { font-size: 0.95rem; font-weight: 600; font-family: var(--mono); }
+
+    /* ── Table ── */
+    .table-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .table-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .filter-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .filter-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 0.35rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: var(--font);
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: rgba(59,130,246,0.15);
+      border-color: var(--accent);
+      color: #93c5fd;
+    }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    thead th {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(31,45,69,0.5);
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+    tbody tr:hover { background: var(--surface2); }
+    tbody td { padding: 0.85rem 1rem; vertical-align: top; }
+    .id-cell { font-family: var(--mono); font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
+    .priority-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      white-space: nowrap;
+    }
+    .P0 { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+    .P1 { background: rgba(249,115,22,0.15); color: #fdba74; border: 1px solid rgba(249,115,22,0.3); }
+    .P2 { background: rgba(234,179,8,0.15); color: #fde047; border: 1px solid rgba(234,179,8,0.3); }
+    .P3 { background: rgba(34,197,94,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+    .category-cell { font-size: 0.82rem; color: var(--text-dim); }
+    .summary-cell { color: var(--text); max-width: 320px; line-height: 1.5; }
+    .human-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .human-yes { color: var(--p0); }
+    .human-no { color: var(--p3); }
+    .conf-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .conf-track {
+      width: 60px;
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .conf-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+    .conf-text { font-size: 0.78rem; font-family: var(--mono); color: var(--text-muted); }
+    .flags-cell { font-size: 0.72rem; color: var(--accent2); font-family: var(--mono); }
+
+    /* ── Loader ── */
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: slideUp 0.2s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem; }
+    .modal-field { margin-bottom: 1rem; }
+    .modal-field label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); display: block; margin-bottom: 0.35rem; }
+    .modal-field .val { font-size: 0.9rem; line-height: 1.6; }
+    .modal-close {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      transition: all 0.15s;
+    }
+    .modal-close:hover { border-color: var(--accent); color: var(--text); }
+    .text-preview {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">FRONT<span>LINE</span></div>
+    <div class="header-badge">AI TRIAGE SYSTEM</div>
+  </header>
+
+  <main>
+    <!-- Stats -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="stat-label">Total Messages</div><div class="stat-value blue" id="stat-total">—</div></div>
+      <div class="stat-card"><div class="stat-label">P0 Critical</div><div class="stat-value red" id="stat-p0">—</div></div>
+      <div class="stat-card"><div class="stat-label">Needs Human</div><div class="stat-value orange" id="stat-human">—</div></div>
+      <div class="stat-card"><div class="stat-label">Adversarial</div><div class="stat-value purple" id="stat-adv">—</div></div>
+      <div class="stat-card"><div class="stat-label">Avg Confidence</div><div class="stat-value green" id="stat-conf">—</div></div>
+    </div>
+
+    <!-- Live Triage -->
+    <div class="triage-panel">
+      <div class="panel-title">Live Triage</div>
+      <div class="triage-form">
+        <input id="triage-input" class="triage-input" type="text" placeholder="Type a customer message to triage..." />
+        <button class="btn" id="triage-btn" onclick="triageLive()">Triage →</button>
+      </div>
+      <div class="triage-result" id="triage-result">
+        <div class="result-card" id="result-card"></div>
+      </div>
+    </div>
+
+    <!-- Results Table -->
+    <div class="table-panel">
+      <div class="table-header">
+        <div class="panel-title" style="margin-bottom:0">All Messages</div>
+        <div class="filter-group">
+          <button class="filter-btn active" onclick="filterBy('all', this)">All</button>
+          <button class="filter-btn" onclick="filterBy('P0', this)">🔴 P0</button>
+          <button class="filter-btn" onclick="filterBy('P1', this)">🟠 P1</button>
+          <button class="filter-btn" onclick="filterBy('human', this)">🚨 Needs Human</button>
+          <button class="filter-btn" onclick="filterBy('adversarial', this)">⚠️ Adversarial</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="loading" id="loading"><div class="spinner"></div>Loading triage results...</div>
+        <table id="results-table" style="display:none">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Priority</th>
+              <th>Category</th>
+              <th>Summary</th>
+              <th>Human?</th>
+              <th>Confidence</th>
+              <th>Flags</th>
+            </tr>
+          </thead>
+          <tbody id="results-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Detail Modal -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal" id="modal">
+      <div class="modal-title" id="modal-title">Message Detail</div>
+      <div id="modal-body"></div>
+      <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('open')">Close</button>
+    </div>
+  </div>
+
+  <script>
+    let allResults = [];
+    let currentFilter = 'all';
+
+    async function loadStats() {
+      try {
+        const r = await fetch('/api/stats');
+        const s = await r.json();
+        document.getElementById('stat-total').textContent = s.total ?? '—';
+        document.getElementById('stat-p0').textContent = s.by_priority?.P0 ?? 0;
+        document.getElementById('stat-human').textContent = s.needs_human ?? '—';
+        document.getElementById('stat-adv').textContent = s.adversarial_count ?? 0;
+        document.getElementById('stat-conf').textContent = s.avg_confidence != null ? (s.avg_confidence * 100).toFixed(0) + '%' : '—';
+      } catch(e) {}
+    }
+
+    async function loadResults() {
+      try {
+        const r = await fetch('/api/results');
+        allResults = await r.json();
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('results-table').style.display = 'table';
+        renderTable(allResults);
+      } catch(e) {
+        document.getElementById('loading').innerHTML = '<p style="color:#ef4444">Error loading results. Run the triage processor first.</p>';
+      }
+    }
+
+    function confColor(c) {
+      if (c >= 0.8) return '#22c55e';
+      if (c >= 0.6) return '#eab308';
+      return '#ef4444';
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('results-body');
+      tbody.innerHTML = '';
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#64748b">No results match this filter.</td></tr>';
+        return;
+      }
+      data.forEach(r => {
+        const tr = document.createElement('tr');
+        const conf = r.confidence ?? 0;
+        const flags = (r.flags || []).join(', ') || '—';
+        tr.innerHTML = `
+          <td class="id-cell">${r.id}</td>
+          <td><span class="priority-badge ${r.priority}">${r.priority}</span></td>
+          <td class="category-cell">${r.category || '—'}</td>
+          <td class="summary-cell">${(r.summary || '').substring(0, 100)}${r.summary?.length > 100 ? '…' : ''}</td>
+          <td><span class="human-badge ${r.needs_human ? 'human-yes' : 'human-no'}">${r.needs_human ? '🚨 YES' : '✅ no'}</span></td>
+          <td>
+            <div class="conf-bar">
+              <div class="conf-track"><div class="conf-fill" style="width:${conf*100}%;background:${confColor(conf)}"></div></div>
+              <span class="conf-text">${(conf*100).toFixed(0)}%</span>
+            </div>
+          </td>
+          <td class="flags-cell">${flags}</td>
+        `;
+        tr.onclick = () => openModal(r);
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterBy(key, btn) {
+      currentFilter = key;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      let filtered = allResults;
+      if (key === 'P0') filtered = allResults.filter(r => r.priority === 'P0');
+      else if (key === 'P1') filtered = allResults.filter(r => r.priority === 'P1');
+      else if (key === 'human') filtered = allResults.filter(r => r.needs_human);
+      else if (key === 'adversarial') filtered = allResults.filter(r => r.category === 'adversarial');
+      renderTable(filtered);
+    }
+
+    function openModal(r) {
+      document.getElementById('modal-title').textContent = `${r.id} — ${r.category}`;
+      document.getElementById('modal-body').innerHTML = `
+        <div class="modal-field"><label>Original Message</label><div class="text-preview">${r.original_text || '—'}</div></div>
+        <div class="modal-field"><label>Priority</label><div class="val"><span class="priority-badge ${r.priority}">${r.priority}</span></div></div>
+        <div class="modal-field"><label>Category</label><div class="val">${r.category}</div></div>
+        <div class="modal-field"><label>Summary</label><div class="val">${r.summary || '—'}</div></div>
+        <div class="modal-field"><label>Suggested Action</label><div class="val">${r.suggested_action || '—'}</div></div>
+        <div class="modal-field"><label>Needs Human</label><div class="val">${r.needs_human ? '🚨 Yes' : '✅ No'}</div></div>
+        <div class="modal-field"><label>Confidence</label><div class="val">${((r.confidence ?? 0)*100).toFixed(0)}%</div></div>
+        <div class="modal-field"><label>Language</label><div class="val">${r.detected_language || 'en'}</div></div>
+        <div class="modal-field"><label>Flags</label><div class="val" style="font-family:var(--mono);color:#a78bfa">${(r.flags||[]).join(', ') || '—'}</div></div>
+      `;
+      document.getElementById('modal-overlay').classList.add('open');
+    }
+
+    function closeModal(e) {
+      if (e.target === document.getElementById('modal-overlay'))
+        document.getElementById('modal-overlay').classList.remove('open');
+    }
+
+    async function triageLive() {
+      const input = document.getElementById('triage-input');
+      const btn = document.getElementById('triage-btn');
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Triaging...';
+
+      try {
+        const resp = await fetch('/api/triage', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({message: msg}),
+        });
+        const r = await resp.json();
+        const card = document.getElementById('result-card');
+        const conf = r.confidence ?? 0;
+        card.innerHTML = `
+          <div class="result-field"><label>Category</label><div class="val">${r.category || '—'}</div></div>
+          <div class="result-field"><label>Priority</label><div class="val"><span class="priority-badge ${r.priority}">${r.priority}</span></div></div>
+          <div class="result-field"><label>Needs Human</label><div class="val">${r.needs_human ? '🚨 Yes' : '✅ No'}</div></div>
+          <div class="result-field"><label>Confidence</label><div class="val" style="color:${confColor(conf)}">${(conf*100).toFixed(0)}%</div></div>
+          <div class="result-field" style="grid-column:1/-1"><label>Summary</label><div class="val">${r.summary || '—'}</div></div>
+          <div class="result-field" style="grid-column:1/-1"><label>Suggested Action</label><div class="val">${r.suggested_action || '—'}</div></div>
+        `;
+        document.getElementById('triage-result').style.display = 'block';
+      } catch(e) {
+        alert('Error: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Triage →';
+      }
+    }
+
+    document.getElementById('triage-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') triageLive();
+    });
+
+    loadStats();
+    loadResults();
+  </script>
+</body>
+</html>
