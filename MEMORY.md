@@ -1,1 +1,2 @@
 - [Async batch processing implemented](memory/async-batch-processing-implemented.md) — Added asynchronous batch processing for improved throughput
+- [Language-specific prompting implemented](memory/language-specific-prompting-implemented.md) — Added multilingual support with language detection and language-specific prompts

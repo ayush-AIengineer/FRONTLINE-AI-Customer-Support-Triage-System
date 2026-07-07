@@ -37,6 +37,25 @@ def save_confidence_threshold(threshold: float):
     except OSError as e:
         logger.warning(f"Could not save confidence threshold: {e}")
 
+
+def get_language_confidence_threshold(lang_code: str) -> float:
+    """
+    Get confidence threshold for a specific language.
+    Falls back to the default threshold if language-specific not configured.
+    """
+    try:
+        # Try to load language-specific config
+        lang_conf_file = CONFIG_DIR / f"confidence_{lang_code}.json"
+        if lang_conf_file.exists():
+            with open(lang_conf_file, "r") as f:
+                config = json.load(f)
+                return float(config.get("threshold", 0.6))
+    except (json.JSONDecodeError, OSError):
+        pass
+
+    # Fall back to default threshold
+    return load_confidence_threshold()
+
 def load_feedback() -> List[Dict]:
     try:
         if FEEDBACK_FILE.exists():
@@ -423,14 +442,22 @@ def validate_triage(result: Dict) -> Dict:
     }
     
     if out["category"] not in VALID_CATEGORIES:
-        out["flags"].append(f"invalid_category_fallback_{out['category']}")
+        out["flags"].append("invalid_category_corrected")
         out["category"] = "unclear"
 
     if out["priority"] not in VALID_PRIORITIES:
-        out["flags"].append(f"invalid_priority_fallback_{out['priority']}")
+        out["flags"].append("invalid_priority_corrected")
         out["priority"] = "P3"
 
-    threshold = load_confidence_threshold()
+    # Clamp confidence to [0.0, 1.0] range
+    if out["confidence"] > 1.0:
+        out["confidence"] = 1.0
+    elif out["confidence"] < 0.0:
+        out["confidence"] = 0.0
+
+    # Language-specific confidence threshold
+    lang_code = out["detected_language"]
+    threshold = get_language_confidence_threshold(lang_code)
     if out["confidence"] < threshold:
         out["needs_human"] = True
         if "low_confidence" not in out["flags"]:
